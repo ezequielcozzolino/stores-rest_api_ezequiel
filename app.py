@@ -15,7 +15,16 @@ app.config['DEBUG'] = True
 
 # Lo que hace es que si la variable DATABASE_URL no esta seteada usa sqlite local 
 # (osea cuando lo ejecutemos localmente no va a enocntrar la variable entonces usa sqlite)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db') 
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db') 
+
+# Este codigo es porque Recently SQLAlchemy has been 
+# updated to version 1.4. In this version, 
+# they deprecated database connection strings like this one:
+uri = os.getenv("DATABASE_URL", 'sqlite:///data.db')  # or other relevant config var
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'jose'
 api = Api(app)
